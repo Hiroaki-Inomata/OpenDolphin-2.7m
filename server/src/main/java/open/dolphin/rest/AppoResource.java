@@ -1,0 +1,46 @@
+package open.dolphin.rest;
+
+import java.io.IOException;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import open.dolphin.infomodel.AppoList;
+import open.dolphin.session.AppoServiceBean;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
+
+/**
+ * REST Web Service
+ *
+ * @author Kazushi Minagawa, Digital Globe, Inc.
+ */
+@Path("/appo")
+public class AppoResource extends AbstractResource {
+    
+    @Inject
+    private AppoServiceBean appoServiceBean;
+
+    /** Creates a new instance of AppoResource */
+    public AppoResource() {
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String putXml(String json) throws IOException {
+        
+        ObjectMapper mapper = new ObjectMapper();
+        // 2013/06/24
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        AppoList list = mapper.readValue(json, AppoList.class);
+        
+        int count = appoServiceBean.putAppointments(list.getList());
+        String cntStr = String.valueOf(count);
+        debug(cntStr);
+
+        return cntStr;
+    }
+}
