@@ -2060,6 +2060,78 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel, NC
                         }
                     }
                     ddl.putKarte(model);
+                    
+                    //inomata 当方環境、通信不具合ままある。送信前に問答無用でバックアップを取る。
+                    String userhome = System.getProperty("user.home");
+                    File file = new File(userhome + "\\OpenDolphin" + "\\Backup");
+                        if (file.exists()==false) {
+                            file.mkdir();
+                        }
+                    File subfile = new File(file +"\\"+ getContext().getPatient().getPatientId());
+                        if (subfile.exists()==false) {
+                            subfile.mkdir();
+                        }
+                    String firstdate =  new SimpleDateFormat("yyyy-MM-dd-HH-mm").format( model.getDocInfoModel().getFirstConfirmDate());
+                    String recdate = new SimpleDateFormat("yyyy-MM-dd-HH-mm").format( model.getDocInfoModel().getConfirmDate());                        
+                    File backup = new File(subfile.toString() +"\\"+ firstdate + ".txt");
+                        if (backup.exists()==false) {
+                            try{
+                               backup.createNewFile();
+                            }catch(IOException e){
+                                e.printStackTrace();
+                            }
+                        }
+                    KarteStyledDocument soadoc = (KarteStyledDocument)soaPane.getTextPane().getDocument();
+                    int nleft = soadoc.getLength();
+                    Segment stext = new Segment();
+                    int offs = 0;
+                    stext.setPartialReturn(true);
+                    StringBuilder sb = new StringBuilder();
+                    String Separator=System.getProperty("line.separator");
+                    sb.append("<SOA>"+ Separator);                    
+                    while (nleft > 0) {
+                       soadoc.getText(offs, nleft, stext);
+                       sb.append(stext.toString()); sb.append(Separator);
+                       nleft -= stext.count;
+                       offs += stext.count;
+                    }
+                    sb.append(Separator+"<P>"+Separator);
+                    List<ModuleModel> listMp = model.getModules();
+                    for(ModuleModel mpmodel:listMp){
+                       if(mpmodel.getModuleInfoBean().getEntity().equals("baseChargeOrder")){
+                            BundleDolphin bundleD = (BundleDolphin)mpmodel.getModel();
+                            sb.append( bundleD.getOrderName()+"("+ mpmodel.getModuleInfoBean().getStampName() +")"+Separator
+                                    +bundleD.getItemNames()+Separator+Separator);
+                        }else if(mpmodel.getModuleInfoBean().getEntity().equals("medOrder")){
+                            BundleMed bundleM = (BundleMed)mpmodel.getModel();
+                            sb.append( bundleM.toString()+Separator+Separator);                      
+                        }else if(mpmodel.getModuleInfoBean().getEntity().equals("testOrder")){
+                            BundleDolphin bundleD = (BundleDolphin)mpmodel.getModel();
+                            sb.append(bundleD.getOrderName()+"("+mpmodel.getModuleInfoBean().getStampName()+")"+Separator
+                                    +bundleD.getItemNames()+Separator+Separator);
+                        }else if(mpmodel.getModuleInfoBean().getEntity().equals("generalOrder")){
+                            BundleDolphin bundleD = (BundleDolphin)mpmodel.getModel();
+                            sb.append(bundleD.getOrderName()+"("+mpmodel.getModuleInfoBean().getStampName()+")"+Separator
+                                    +bundleD.getItemNames()+Separator+Separator);
+                        }else if(mpmodel.getModuleInfoBean().getEntity().equals("otherOrder")){
+                            BundleDolphin bundleD = (BundleDolphin)mpmodel.getModel();
+                            sb.append(bundleD.getOrderName()+"("+mpmodel.getModuleInfoBean().getStampName()+")"+Separator
+                                    +bundleD.getItemNames()+Separator+Separator);
+                        }else{
+                            //他不明
+                        }                                                
+                    }
+                    sb.append("-- record: "+ recdate+"--");
+                    try {
+                        FileOutputStream fos = new FileOutputStream(backup);
+                        OutputStreamWriter osw = new OutputStreamWriter(fos,"UTF-8");
+                        osw.write(sb.toString());
+                        osw.close();
+                        fos.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }                     
+                                        
                     //masuda$                   
                     //----------------------------------------------
                     // Send
