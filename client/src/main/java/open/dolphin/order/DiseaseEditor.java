@@ -3,8 +3,11 @@ package open.dolphin.order;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,9 +17,11 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import open.dolphin.client.AutoKanjiListener;
+import open.dolphin.client.AutoRomanListener;
 import open.dolphin.client.ClientContext;
 import open.dolphin.delegater.OrcaDelegater;
 import open.dolphin.delegater.OrcaDelegaterFactory;
@@ -45,6 +50,8 @@ public final class DiseaseEditor extends AbstractStampEditor {
     private static final int NAME_COL       = 1;
     private static final int ALIAS_COL      = 2;
     private static final int DISEASE_NUM_ROWS = 5;
+    
+    private static final String TOOLTIP_COMBINE  = "テーブルの行を連結して修飾語付きの傷病名にします";
     
     // Table model
     private IDiseaseView view;
@@ -133,7 +140,7 @@ public final class DiseaseEditor extends AbstractStampEditor {
             // 名前とコードを設定する
             diagnosis.setDiagnosis(name.toString());
             diagnosis.setDiagnosisCode(code.toString());
-            ArrayList<RegisteredDiagnosisModel> ret = new ArrayList<>(1);
+            ArrayList<RegisteredDiagnosisModel> ret = new ArrayList<RegisteredDiagnosisModel>(1);
             ret.add(diagnosis);
 
             return ret;
@@ -160,7 +167,7 @@ public final class DiseaseEditor extends AbstractStampEditor {
     @Override
     protected void checkValidation() {
 
-        setIsEmpty = tableModel.getObjectCount() == 0;
+        setIsEmpty = tableModel.getObjectCount() == 0 ? true : false;
 
         setIsValid = true;
 
@@ -170,6 +177,8 @@ public final class DiseaseEditor extends AbstractStampEditor {
         for (RegisteredDiagnosisModel diag : itemList) {
 
             if (diag.getDiagnosisCode().startsWith(MODIFIER_CODE)) {
+                continue;
+
             } else {
                 diseaseCnt++;
             }
@@ -215,7 +224,8 @@ public final class DiseaseEditor extends AbstractStampEditor {
 
             @Override
             protected List<DiseaseEntry> doInBackground() throws Exception {
-                
+                //SqlMasterDao dao = (SqlMasterDao) SqlDaoFactory.create("dao.master");
+                //OrcaRestDelegater dao = new OrcaRestDelegater();
                 OrcaDelegater dao = OrcaDelegaterFactory.create();
                 String d = new SimpleDateFormat("yyyyMMdd").format(new Date());
                 List<DiseaseEntry> result = dao.getDiseaseByName(StringTool.hiraganaToKatakana(text), d, view.getPartialChk().isSelected());
@@ -224,6 +234,9 @@ public final class DiseaseEditor extends AbstractStampEditor {
                     result = dao.getDiseaseByName(text, d, view.getPartialChk().isSelected());
                 }
 //s.oh$
+//                if (!dao.isNoError()) {
+//                    throw new Exception(dao.getErrorMessage());
+//                }
                 return result;
             }
 
@@ -255,24 +268,26 @@ public final class DiseaseEditor extends AbstractStampEditor {
         checkValidation();
     }
 
-    private final void initComponents() {
+    @Override
+    protected void initComponents() {
 
         //view = new DiseaseView();
         view = editorButtonTypeIsIcon() ? new DiseaseView() : new DiseaseViewText();
         
         // Info Label
-        view.getInfoLabel().setIcon(ClientContext.getImageIconArias("icon_info_small")); 
-        
-        // Resource Injection
-        java.util.ResourceBundle bundle = ClientContext.getMyBundle(DiseaseEditor.class);
+//minagawa^ Icon Server
+        view.getInfoLabel().setIcon(ClientContext.getImageIconArias("icon_info_small"));
+//minagawa$        
         
         // テーブルのカラム名を取得する
-        String line = bundle.getString("columnNames.diceaseTable");
-        String[] diganosisColumns = line.split(",");
+        String[] diganosisColumns = new String[]{
+            "コード", "疾患名/修飾語", "エイリアス"
+        };
 
-        // テーブルのMethod名を取得する
-        line = bundle.getString("methods.diceaseTable");
-        String[] methodNames = line.split(",");
+        // テーブルのカラム名を取得する
+        String[] methodNames = new String[]{
+            "getDiagnosisCode", "getDiagnosisName", "getDiagnosisAlias"
+        };
         
         // 病名テーブルを生成する
         tableModel = new ListTableModel<RegisteredDiagnosisModel>(diganosisColumns, DISEASE_NUM_ROWS, methodNames, null) {
@@ -374,13 +389,16 @@ public final class DiseaseEditor extends AbstractStampEditor {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setRowSelectionAllowed(true);
         ListSelectionModel m = table.getSelectionModel();
-        m.addListSelectionListener((ListSelectionEvent e) -> {
-            if (e.getValueIsAdjusting() == false) {
-                int row = view.getSetTable().getSelectedRow();
-                if (tableModel.getObject(row)!= null) {
-                    view.getDeleteBtn().setEnabled(true);
-                } else {
-                    view.getDeleteBtn().setEnabled(false);
+        m.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting() == false) {
+                    int row = view.getSetTable().getSelectedRow();
+                    if (tableModel.getObject(row)!= null) {
+                        view.getDeleteBtn().setEnabled(true);
+                    } else {
+                        view.getDeleteBtn().setEnabled(false);
+                    }
                 }
             }
         });
@@ -544,14 +562,11 @@ public final class DiseaseEditor extends AbstractStampEditor {
         //
         // 病名マスタ検索結果テーブル
         //
-        line = bundle.getString("columnNames.masterTable");
-        String[] srColumnNames = line.split(",");
-        
-        line = bundle.getString("methods.masterTable");
-        String[] srMthodNames = line.split(",");
+        String[] srColumnNames = new String[]{"コード", "名 称", "カナ", "ICD10"};
+        String[] srMthodNames = new String[]{"getCode", "getName", "getKana", "getIcdTen"};
         int[] srColumnWidth = new int[]{10, 135, 135, 10};
 
-        searchResultModel = new ListTableModel<>(srColumnNames, 0, srMthodNames, null);
+        searchResultModel = new ListTableModel<DiseaseEntry>(srColumnNames, 0, srMthodNames, null);
 
         JTable searchResultTable = view.getSearchResultTable();
         searchResultTable.setModel(searchResultModel);
@@ -559,25 +574,30 @@ public final class DiseaseEditor extends AbstractStampEditor {
         searchResultTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         searchResultTable.setRowSelectionAllowed(true);
         ListSelectionModel lm = searchResultTable.getSelectionModel();
-        lm.addListSelectionListener((ListSelectionEvent e) -> {
-            if (e.getValueIsAdjusting() == false) {
-                
-                int row = view.getSearchResultTable().getSelectedRow();
-                
-                DiseaseEntry o = searchResultModel.getObject(row);
-                
-                if (o != null) {
-                    
-                    String codeSystem = ClientContext.getString("mml.codeSystem.diseaseMaster");
-                    RegisteredDiagnosisModel model = new RegisteredDiagnosisModel();
-                    model.setDiagnosis(o.getName());
-                    model.setDiagnosisCode(o.getCode());
-                    model.setDiagnosisCodeSystem(codeSystem);
-                    tableModel.addObject(model);
-                    reconstractDiagnosis();
-                    checkValidation();
+        lm.addListSelectionListener(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+
+                if (e.getValueIsAdjusting() == false) {
+
+                    int row = view.getSearchResultTable().getSelectedRow();
+
+                    DiseaseEntry o = searchResultModel.getObject(row);
+
+                    if (o != null) {
+
+                        String codeSystem = ClientContext.getString("mml.codeSystem.diseaseMaster");
+                        RegisteredDiagnosisModel model = new RegisteredDiagnosisModel();
+                        model.setDiagnosis(o.getName());
+                        model.setDiagnosisCode(o.getCode());
+                        model.setDiagnosisCodeSystem(codeSystem);
+                        tableModel.addObject(model);
+                        reconstractDiagnosis();
+                        checkValidation();
+                    }
+                    searchTextField.requestFocus();
                 }
-                searchTextField.requestFocus();
             }
         });
 
@@ -587,6 +607,7 @@ public final class DiseaseEditor extends AbstractStampEditor {
             column.setPreferredWidth(srColumnWidth[i]);
         }
         
+        //searchResultTable.setDefaultRenderer(Object.class, new OddEvenRowRenderer());
         StripeTableCellRenderer str = new StripeTableCellRenderer();
         str.setTable(searchResultTable);
         str.setDefaultRenderer();
@@ -594,8 +615,7 @@ public final class DiseaseEditor extends AbstractStampEditor {
         // 複合病名フィールド
         JTextField combinedDiagnosis = view.getStampNameField();
         combinedDiagnosis.setEditable(false);
-        String toolTipText = bundle.getString("toolTipText.combinedDicease");
-        combinedDiagnosis.setToolTipText(toolTipText);
+        combinedDiagnosis.setToolTipText(TOOLTIP_COMBINE);
         
         // 検索フィールド
         DocumentListener dl = new DocumentListener() {
@@ -606,9 +626,12 @@ public final class DiseaseEditor extends AbstractStampEditor {
                 //if (view.getRtBtn().isSelected()) {
                 //    search(view.getSearchTextField().getText().trim(), false);
                 //}
-                SwingUtilities.invokeLater(() -> {
-                    if (view.getRtBtn().isSelected()) {
-                        search(view.getSearchTextField().getText().trim(), false);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (view.getRtBtn().isSelected()) {
+                            search(view.getSearchTextField().getText().trim(), false);
+                        }
                     }
                 });
 //s.oh$
@@ -620,9 +643,12 @@ public final class DiseaseEditor extends AbstractStampEditor {
                 //if (view.getRtBtn().isSelected()) {
                 //    search(view.getSearchTextField().getText().trim(), false);
                 //}
-                SwingUtilities.invokeLater(() -> {
-                    if (view.getRtBtn().isSelected()) {
-                        search(view.getSearchTextField().getText().trim(), false);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (view.getRtBtn().isSelected()) {
+                            search(view.getSearchTextField().getText().trim(), false);
+                        }
                     }
                 });
 //s.oh$
@@ -634,9 +660,12 @@ public final class DiseaseEditor extends AbstractStampEditor {
                 //if (view.getRtBtn().isSelected()) {
                 //    search(view.getSearchTextField().getText().trim(), false);
                 //}
-                SwingUtilities.invokeLater(() -> {
-                    if (view.getRtBtn().isSelected()) {
-                        search(view.getSearchTextField().getText().trim(), false);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (view.getRtBtn().isSelected()) {
+                            search(view.getSearchTextField().getText().trim(), false);
+                        }
                     }
                 });
 //s.oh$
@@ -644,8 +673,11 @@ public final class DiseaseEditor extends AbstractStampEditor {
         };
         searchTextField = view.getSearchTextField();
         searchTextField.getDocument().addDocumentListener(dl);
-        searchTextField.addActionListener((ActionEvent e) -> {
-            search(view.getSearchTextField().getText().trim(),true);
+        searchTextField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                search(view.getSearchTextField().getText().trim(),true);
+            }
         });
         searchTextField.addFocusListener(AutoKanjiListener.getInstance());
         // マスター検索ができない場合を追加
@@ -654,15 +686,23 @@ public final class DiseaseEditor extends AbstractStampEditor {
         // Real Time Search
         boolean rt = Project.getBoolean("masterSearch.realTime", true);
         view.getRtBtn().setSelected(rt);
-        view.getRtBtn().addActionListener((ActionEvent arg0) -> {
-            Project.setBoolean("masterSearch.realTime", view.getRtBtn().isSelected());
+        view.getRtBtn().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                Project.setBoolean("masterSearch.realTime", view.getRtBtn().isSelected());
+            }
         });
 
         // 部分一致
         boolean pmatch = Project.getBoolean("masterSearch.partialMatch", false);
         view.getPartialChk().setSelected(pmatch);
-        view.getPartialChk().addActionListener((ActionEvent arg0) -> {
-            Project.setBoolean("masterSearch.partialMatch", view.getPartialChk().isSelected());
+        view.getPartialChk().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                Project.setBoolean("masterSearch.partialMatch", view.getPartialChk().isSelected());
+            }
         });
 
         // 件数フィールド
@@ -670,50 +710,71 @@ public final class DiseaseEditor extends AbstractStampEditor {
 
         // OK & 連続ボタン
         view.getOkCntBtn().setEnabled(false);
+//minagawa^ Icon Server
         if(editorButtonTypeIsIcon()) {
             view.getOkCntBtn().setIcon(ClientContext.getImageIconArias("icon_gear_small"));
         }
-////s.oh^ 2014/10/22 Icon表示
+//s.oh^ 2014/10/22 Icon表示
 //        view.getSearchLabel().setIcon(ClientContext.getImageIconArias("icon_search_small"));
-////s.oh$         
-        view.getOkCntBtn().addActionListener((ActionEvent e) -> {
-            boundSupport.firePropertyChange(VALUE_PROP, null, getValue());
-            clear();
+//s.oh$
+//minagawa$          
+        view.getOkCntBtn().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boundSupport.firePropertyChange(VALUE_PROP, null, getValue());
+                clear();
+            }
         });
+
 
         // OK ボタン
         view.getOkBtn().setEnabled(false);
+//minagawa^ Icon Server
         if(editorButtonTypeIsIcon()) {
             view.getOkBtn().setIcon(ClientContext.getImageIconArias("icon_accept_small"));
-        }         
-        view.getOkBtn().addActionListener((ActionEvent e) -> {
-            boundSupport.firePropertyChange(VALUE_PROP, null, getValue());
-            dispose();
-            boundSupport.firePropertyChange(EDIT_END_PROP, false, true);
+        }
+//minagawa$         
+        view.getOkBtn().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boundSupport.firePropertyChange(VALUE_PROP, null, getValue());
+                dispose();
+                boundSupport.firePropertyChange(EDIT_END_PROP, false, true);
+            }
         });
 
         // 削除ボタン
         view.getDeleteBtn().setEnabled(false);
+//minagawa^ Icon Server
         if(editorButtonTypeIsIcon()) {
             view.getDeleteBtn().setIcon(ClientContext.getImageIconArias("icon_delete_small"));
-        }       
-        view.getDeleteBtn().addActionListener((ActionEvent e) -> {
-            int row = view.getSetTable().getSelectedRow();
-            if ((!view.getSetTable().isEditing()) &&  tableModel.getObject(row) != null) {
-                tableModel.deleteAt(row);
-                checkValidation();
-            } else {
-                Toolkit.getDefaultToolkit().beep();
+        }
+//minagawa$        
+        view.getDeleteBtn().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = view.getSetTable().getSelectedRow();
+                if ((!view.getSetTable().isEditing()) &&  tableModel.getObject(row) != null) {
+                    tableModel.deleteAt(row);
+                    checkValidation();
+                } else {
+                    Toolkit.getDefaultToolkit().beep();
+                }
             }
         });
 
         // クリアボタン
         view.getClearBtn().setEnabled(false);
+//minagawa^ Icon Server
         if(editorButtonTypeIsIcon()) {
             view.getClearBtn().setIcon(ClientContext.getImageIconArias("icon_clear_small"));
-        }       
-        view.getClearBtn().addActionListener((ActionEvent e) -> {
-            clear();
+        }
+//minagawa$        
+        view.getClearBtn().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clear();
+            }
         });
     }
 
@@ -757,10 +818,8 @@ public final class DiseaseEditor extends AbstractStampEditor {
 
     public DiseaseEditor(boolean mode) {
         super();
-        initComponents();
         this.setFromStampEditor(mode);
-        String on = ClientContext.getMyBundle(DiseaseEditor.class).getString("title.document");
-        this.setOrderName(on);
+        this.setOrderName("傷病名");
     }
 }
 

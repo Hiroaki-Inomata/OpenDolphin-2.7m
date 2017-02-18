@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>opendolphin</artifactId>
-        <groupId>opendolphin</groupId>
+        <groupId>opendolphin-modified</groupId>
         <version>2.7.2</version>
     </parent>
     <artifactId>opendolphin-server</artifactId>
@@ -24,7 +24,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>opendolphin</groupId>
+            <groupId>opendolphin-modified</groupId>
             <artifactId>opendolphin-common</artifactId>
         </dependency>
         <dependency>
@@ -120,17 +120,6 @@
                     <showDeprecation>true</showDeprecation>
                     <source>1.8</source>
                     <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.wildfly.plugins</groupId>
-                <artifactId>wildfly-maven-plugin</artifactId>
-                <version>1.0.2.Final</version>
-                <configuration>
-                    <hostname>101.100.168.192</hostname>
-                    <port>9990</port>
-                    <username>admin</username>
-                    <password>admin</password>
                 </configuration>
             </plugin>
         </plugins>
