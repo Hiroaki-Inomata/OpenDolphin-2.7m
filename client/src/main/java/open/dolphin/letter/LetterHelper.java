@@ -98,7 +98,7 @@ public class LetterHelper {
 
     protected static String getBirdayWithAge(String birthday, String age) {
         String fmt = java.util.ResourceBundle.getBundle("open/dolphin/letter/resources/LetterHelper").getString("messageFormat.birthdayWithAge");
-        return new MessageFormat(fmt).format(new Object[]{birthday});
+        return new MessageFormat(fmt).format(new Object[]{birthday, age});
     }
 
     protected static String getAddressWithZipCode(String address, String zip) {

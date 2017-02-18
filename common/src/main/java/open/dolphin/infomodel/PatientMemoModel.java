@@ -20,7 +20,7 @@ public class PatientMemoModel extends KarteEntryBean implements java.io.Serializ
     private String memo;
 //masuda^    
     @Lob
-    @Type(type="org.hibernate.type.StringClobType")
+    @Type(type="org.hibernate.type.StringType")
     private String memo2;
     
     public String getMemo() {

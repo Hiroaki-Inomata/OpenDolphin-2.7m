@@ -1003,7 +1003,6 @@ open\dolphin\util\AgeCalculater.class
 open\dolphin\impl\pinfo\PatientInfoDocument$3.class
 open\dolphin\impl\schedule\PatientScheduleImpl$2.class
 open\dolphin\impl\pinfo\FreeDocument.class
-open\dolphin\order\AbstractStampEditor.class
 open\dolphin\client\NewKarte.class
 open\dolphin\impl\care\OrderHistoryPanel$4.class
 open\dolphin\client\PhysicalEditor.class

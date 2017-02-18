@@ -35,6 +35,11 @@ import open.dolphin.plugin.PluginLoader;
 import open.dolphin.project.Project;
 import open.dolphin.util.BeanUtils;
 import open.dolphin.util.ZenkakuUtils;
+import java.text.SimpleDateFormat;//以下追加
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import javax.swing.text.Segment;
+
 
 /**
  * 2号カルテクラス。
@@ -2095,28 +2100,28 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel, NC
                        nleft -= stext.count;
                        offs += stext.count;
                     }
-                    sb.append(Separator+"<P>"+Separator);
+//                    sb.append(Separator+"<P>"+Separator);
                     List<ModuleModel> listMp = model.getModules();
                     for(ModuleModel mpmodel:listMp){
                        if(mpmodel.getModuleInfoBean().getEntity().equals("baseChargeOrder")){
-                            BundleDolphin bundleD = (BundleDolphin)mpmodel.getModel();
-                            sb.append( bundleD.getOrderName()+"("+ mpmodel.getModuleInfoBean().getStampName() +")"+Separator
-                                    +bundleD.getItemNames()+Separator+Separator);
+//                            BundleDolphin bundleD = (BundleDolphin)mpmodel.getModel();
+//                            sb.append( bundleD.getOrderName()+"("+ mpmodel.getModuleInfoBean().getStampName() +")"+Separator
+//                                    +bundleD.getItemNames()+Separator+Separator);
                         }else if(mpmodel.getModuleInfoBean().getEntity().equals("medOrder")){
-                            BundleMed bundleM = (BundleMed)mpmodel.getModel();
-                            sb.append( bundleM.toString()+Separator+Separator);                      
+//                            BundleMed bundleM = (BundleMed)mpmodel.getModel();
+//                            sb.append( bundleM.toString()+Separator+Separator);                      
                         }else if(mpmodel.getModuleInfoBean().getEntity().equals("testOrder")){
-                            BundleDolphin bundleD = (BundleDolphin)mpmodel.getModel();
-                            sb.append(bundleD.getOrderName()+"("+mpmodel.getModuleInfoBean().getStampName()+")"+Separator
-                                    +bundleD.getItemNames()+Separator+Separator);
+//                            BundleDolphin bundleD = (BundleDolphin)mpmodel.getModel();
+//                            sb.append(bundleD.getOrderName()+"("+mpmodel.getModuleInfoBean().getStampName()+")"+Separator
+//                                    +bundleD.getItemNames()+Separator+Separator);
                         }else if(mpmodel.getModuleInfoBean().getEntity().equals("generalOrder")){
-                            BundleDolphin bundleD = (BundleDolphin)mpmodel.getModel();
-                            sb.append(bundleD.getOrderName()+"("+mpmodel.getModuleInfoBean().getStampName()+")"+Separator
-                                    +bundleD.getItemNames()+Separator+Separator);
+//                            BundleDolphin bundleD = (BundleDolphin)mpmodel.getModel();
+//                            sb.append(bundleD.getOrderName()+"("+mpmodel.getModuleInfoBean().getStampName()+")"+Separator
+//                                    +bundleD.getItemNames()+Separator+Separator);
                         }else if(mpmodel.getModuleInfoBean().getEntity().equals("otherOrder")){
-                            BundleDolphin bundleD = (BundleDolphin)mpmodel.getModel();
-                            sb.append(bundleD.getOrderName()+"("+mpmodel.getModuleInfoBean().getStampName()+")"+Separator
-                                    +bundleD.getItemNames()+Separator+Separator);
+//                            BundleDolphin bundleD = (BundleDolphin)mpmodel.getModel();
+//                            sb.append(bundleD.getOrderName()+"("+mpmodel.getModuleInfoBean().getStampName()+")"+Separator
+//                                    +bundleD.getItemNames()+Separator+Separator);
                         }else{
                             //他不明
                         }                                                

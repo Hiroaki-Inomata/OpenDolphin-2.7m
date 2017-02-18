@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>opendolphin</artifactId>
-        <groupId>opendolphin</groupId>
+        <groupId>opendolphin-modified</groupId>
         <version>2.7.2</version>
     </parent>
     <artifactId>opendolphin-client</artifactId>
@@ -16,7 +16,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>opendolphin</groupId>
+            <groupId>opendolphin-modified</groupId>
             <artifactId>opendolphin-common</artifactId>
         </dependency>
         <dependency>

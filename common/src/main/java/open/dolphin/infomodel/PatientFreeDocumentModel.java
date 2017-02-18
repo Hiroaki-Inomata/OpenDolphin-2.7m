@@ -35,7 +35,7 @@ public class PatientFreeDocumentModel extends InfoModel implements java.io.Seria
     private Date confirmed;
 
     @Lob
-    @Type(type="org.hibernate.type.StringClobType")
+    @Type(type="org.hibernate.type.StringType")
     private String comment;
 
     public long getId() {

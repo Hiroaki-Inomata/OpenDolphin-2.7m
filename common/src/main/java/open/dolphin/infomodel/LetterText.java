@@ -22,7 +22,7 @@ public class LetterText extends InfoModel implements Serializable {
     private String name;
 
     @Lob
-    @Type(type="org.hibernate.type.StringClobType")
+    @Type(type="org.hibernate.type.StringType")
     private String textValue;
 
     @ManyToOne

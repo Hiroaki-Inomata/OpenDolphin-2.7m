@@ -6,18 +6,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import open.dolphin.client.AutoKanjiListener;
+import open.dolphin.client.AutoRomanListener;
 import open.dolphin.client.ClientContext;
 import open.dolphin.delegater.OrcaDelegater;
 import open.dolphin.delegater.OrcaDelegaterFactory;
@@ -33,26 +37,26 @@ import open.dolphin.util.ZenkakuUtils;
  * @author Kazushi Minagawa, Digital Globe, Inc.
  */
 public final class RpEditor extends AbstractStampEditor {
-    
-    private String[] COLUMN_NAMES ;
-    private String[] METHOD_NAMES;
-    private int[] COLUMN_WIDTH;
-    private int ONEDAY_COLUMN;
-    private int BUNDLE_COLUMN;
 
-    private String[] SR_COLUMN_NAMES;
-    private String[] SR_METHOD_NAMES;
-    private int[] SR_COLUMN_WIDTH;
-    private int SR_NUM_ROWS;
+    private static final String[] COLUMN_NAMES = {"コード", "診療内容", "数量", "単位", " ", "日数/回数"};
+    private static final String[] METHOD_NAMES = {"getCode", "getName", "getNumber", "getUnit", "getDummy", "getBundleNumber"};
+    private static final int[] COLUMN_WIDTH = {50, 200, 10, 10, 10};
+    private static final int ONEDAY_COLUMN = 2;
+    private static final int BUNDLE_COLUMN = 5;
 
-    private String[] ADMIN_CODE_REGEXP;
+    private static final String[] SR_COLUMN_NAMES = {"種別", "コード", "名 称", "単位", "点数", "薬価基準"};
+    private static final String[] SR_METHOD_NAMES = {"getSlot", "getSrycd", "getName", "getTaniname", "getTen","getYakkakjncd"};
+    private static final int[] SR_COLUMN_WIDTH = {10, 50, 200, 10, 10, 10};
+    private static final int SR_NUM_ROWS = 20;
 
-    private String IN_MEDICINE;
-    private String EXT_MEDICINE;
+    private static final String[] ADMIN_CODE_REGEXP = {"","0010001","0010002","0010003","0010004","(0010005|0010007)","0010006","0010008","0010009","001"};
+
+    private static final String IN_MEDICINE     = "院内処方";
+    private static final String EXT_MEDICINE    = "院外処方";
     
-    private String[] RP_CODE;
+    private static final String[] RP_CODE = {"211", "212", "221", "222", "231", "232", "291", "292"};
     
-    private String[] BUNDLE_MEMO;
+    private static final String[] BUNDLE_MEMO = {"内用（院内処方）", "内用（院外処方）", "頓用（院内処方）", "頓用（院外処方）", "外用（院内処方）", "外用（院外処方）", "臨時（院内処方）", "臨時（院外処方）"};
 
     // 再編集の場合に保存しておくレセ電算コード
     private String saveReceiptCode;
@@ -107,7 +111,7 @@ public final class RpEditor extends AbstractStampEditor {
         if (!stampName.equals("")) {
             moduleInfo.setStampName(stampName);
         } else {
-            moduleInfo.setStampName(getDefaultStampName());
+            moduleInfo.setStampName(DEFAULT_STAMP_NAME);
         }
 
         return retModel;
@@ -127,6 +131,10 @@ public final class RpEditor extends AbstractStampEditor {
             
         } else if (view.getTemporalChk().isSelected()) {
             naiGaiTon = 290;
+            
+//        } else if (saveReceiptCode!=null && saveReceiptCode.startsWith("29")) {
+//            // ORCA で作成した臨時処方
+//            naiGaiTon = 290;
             
         } else {
             naiGaiTon = 0;
@@ -163,8 +171,7 @@ public final class RpEditor extends AbstractStampEditor {
                     break;
 
                 case ClaimConst.ADMIN:
-                    String target = ClientContext.getClaimBundle().getString("REG_ADMIN_MARK");
-                    String ommit = mItem.getName().replaceAll(target, "");
+                    String ommit = mItem.getName().replaceAll(REG_ADMIN_MARK, "");
                     bundle.setAdmin(ommit);
                     bundle.setAdminCode(mItem.getCode());
                     String bNum = trimToNullIfEmpty(mItem.getBundleNumber());
@@ -231,8 +238,7 @@ public final class RpEditor extends AbstractStampEditor {
         }
         
         bundle.setClassCodeSystem(ClaimConst.CLASS_CODE_ID);
-        java.util.ResourceBundle resBundle = ClientContext.getClaimBundle();
-        bundle.setClassName(resBundle.getString(bundle.getClassCode()));
+        bundle.setClassName(MMLTable.getClaimClassCodeName(bundle.getClassCode()));
 
         return ret;
     }
@@ -255,12 +261,11 @@ public final class RpEditor extends AbstractStampEditor {
         // スタンプ名を表示する
         String stampName = target.getModuleInfoBean().getStampName();
         boolean serialized = target.getModuleInfoBean().isSerialized();
-        ResourceBundle bdl = ClientContext.getClaimBundle();
-        
-        if (!serialized && stampName.startsWith(getStampNameFromEditor())) {
-            stampName = getDefaultStampName();
+
+        if (!serialized && stampName.startsWith(FROM_EDITOR_STAMP_NAME)) {
+            stampName = DEFAULT_STAMP_NAME;
         } else if (stampName.equals("")) {
-            stampName = getDefaultStampName();
+            stampName = DEFAULT_STAMP_NAME;
         }
         view.getStampNameField().setText(stampName);
 
@@ -310,7 +315,7 @@ public final class RpEditor extends AbstractStampEditor {
             MasterItem item = new MasterItem();
             item.setClassCode(ClaimConst.ADMIN);
             item.setCode(med.getAdminCode());
-            item.setName(bdl.getString("ADMIN_MARK") + med.getAdmin());
+            item.setName(ADMIN_MARK + med.getAdmin());
             item.setDummy("X");
             String bNumber = med.getBundleNumber();
             bNumber = ZenkakuUtils.toHalfNumber(bNumber);
@@ -353,7 +358,8 @@ public final class RpEditor extends AbstractStampEditor {
 
             @Override
             protected List<TensuMaster> doInBackground() throws Exception {
-                
+                //SqlMasterDao dao = (SqlMasterDao) SqlDaoFactory.create("dao.master");
+                //OrcaRestDelegater dao = new OrcaRestDelegater();
                 OrcaDelegater dao = OrcaDelegaterFactory.create();
                 String d = new SimpleDateFormat("yyyyMMdd").format(new Date());
                 List<TensuMaster> result = null;
@@ -366,6 +372,10 @@ public final class RpEditor extends AbstractStampEditor {
                     case TT_TENSU_SEARCH:
                         String ten = text.substring(3);
                         result = dao.getTensuMasterByTen(ZenkakuUtils.toHalfNumber(ten), d);
+                        break;
+
+                    case TT_85_SEARCH:
+                        result = dao.getTensuMasterByCode("0085", d);
                         break;
 
                     case TT_CODE_SEARCH:
@@ -382,6 +392,9 @@ public final class RpEditor extends AbstractStampEditor {
                         break;
                 }
 
+//                if (!dao.isNoError()) {
+//                    throw new Exception(dao.getErrorMessage());
+//                }
                 return result;
             }
 
@@ -419,12 +432,16 @@ public final class RpEditor extends AbstractStampEditor {
 
             @Override
             protected List<TensuMaster> doInBackground() throws Exception {
-                
+                //SqlMasterDao dao = (SqlMasterDao) SqlDaoFactory.create("dao.master");
+                //OrcaRestDelegater dao = new OrcaRestDelegater();
                 OrcaDelegater dao = OrcaDelegaterFactory.create();
                 String d = new SimpleDateFormat("yyyyMMdd").format(new Date());
                 
                 List<TensuMaster> result = dao.getTensuMasterByCode(regExp, d);
 
+//                if (!dao.isNoError()) {
+//                    throw new Exception(dao.getErrorMessage());
+//                }
                 return result;
             }
 
@@ -450,10 +467,10 @@ public final class RpEditor extends AbstractStampEditor {
     @Override
     protected void checkValidation() {
 
-        setIsEmpty = tableModel.getObjectCount() == 0;
+        setIsEmpty = tableModel.getObjectCount() == 0 ? true : false;
 
         if (setIsEmpty) {
-            view.getStampNameField().setText(getDefaultStampName());
+            view.getStampNameField().setText(DEFAULT_STAMP_NAME);
         }
 
         setIsValid = true;
@@ -489,7 +506,10 @@ public final class RpEditor extends AbstractStampEditor {
 
         // ButtonControl
         view.getClearBtn().setEnabled(!setIsEmpty);
-        view.getOkCntBtn().setEnabled(setIsValid && getFromStampEditor() && !modifyFromStampHolder); 
+//minagawa^ LSC Test
+        //view.getOkCntBtn().setEnabled(setIsValid && getFromStampEditor());
+        view.getOkCntBtn().setEnabled(setIsValid && getFromStampEditor() && !modifyFromStampHolder);
+//minagawa$ 
         view.getOkBtn().setEnabled(setIsValid && getFromStampEditor());
 
         view.getMedicineCheck().setSelected((medCnt > 0));
@@ -528,7 +548,7 @@ public final class RpEditor extends AbstractStampEditor {
 
         // 医薬品名をスタンプ名の候補にする
         String name = view.getStampNameField().getText().trim();
-        if (name.equals("") || name.equals(getDefaultStampName())) {
+        if (name.equals("") || name.equals(DEFAULT_STAMP_NAME)) {
             view.getStampNameField().setText(item.getName());
         }
 
@@ -542,7 +562,7 @@ public final class RpEditor extends AbstractStampEditor {
     @Override
     protected void clear() {
         tableModel.clear();
-        view.getStampNameField().setText(getDefaultStampName());
+        view.getStampNameField().setText(DEFAULT_STAMP_NAME);
 //s.oh^ 2014/06/30 頓用／臨時のクリア
         view.getTonyoChk().setSelected(false);
         view.getTemporalChk().setSelected(false);
@@ -550,60 +570,17 @@ public final class RpEditor extends AbstractStampEditor {
         checkValidation();
     }
 
-    private final void initComponents() {
-        
-        // Resource Injection
-        ResourceBundle bundle = ClientContext.getMyBundle(RpEditor.class);
-        
-        // セットテーブルのカラム名
-        String line = bundle.getString("columnNames.setTable");
-        COLUMN_NAMES = line.split(",");
-        
-        // セットテーブルのMethod名
-        line = bundle.getString("methods.setTable");
-        METHOD_NAMES = line.split(",");
-
-        // カラム幅等
-        COLUMN_WIDTH = new int[]{50, 200, 10, 10, 10};
-        ONEDAY_COLUMN = 2;
-        BUNDLE_COLUMN = 5;
-
-        // マスターテーブルのカラム名
-        line = bundle.getString("columnNames.masterTable");
-        SR_COLUMN_NAMES = line.split(",");
-
-        // マスターテーブルのMethod名
-        line = bundle.getString("methods.masterTable");
-        SR_METHOD_NAMES = line.split(",");
-
-        // カラム幅等
-        SR_COLUMN_WIDTH = new int[]{10, 50, 200, 10, 10, 10};
-        SR_NUM_ROWS = 20;
-        
-        // ClaimResource
-        ResourceBundle clb = ClientContext.getClaimBundle();
-        
-        // 用法コード 正規表現
-        ADMIN_CODE_REGEXP = (String[])clb.getObject("ADMIN_CODE_REGEXP");
-
-        // 院内処方
-        IN_MEDICINE = clb.getString("PRESCRIPTION_HOSPITAL");
-        
-        // 院外処方
-        EXT_MEDICINE = clb.getString("PRESCRIPTION_EXTERNAL");
-        
-        // 処方区分
-        RP_CODE = (String[])clb.getObject("PRESCRIPTION_CODE");
-        
-        // 処方区分名
-        BUNDLE_MEMO = (String[])clb.getObject("PRESCRIPTION_NAME");
+    @Override
+    protected void initComponents() {
 
         // View
         view = editorButtonTypeIsIcon() ? new RpView() : new RpViewText();
 
         // Info Label
         view.getInfoLabel().setText(this.getInfo());
-        view.getInfoLabel().setIcon(ClientContext.getImageIconArias("icon_info_small"));     
+//minagawa^ Icon Server
+        view.getInfoLabel().setIcon(ClientContext.getImageIconArias("icon_info_small"));
+//minagawa$         
 
         // セットテーブルを生成する
         tableModel = new ListTableModel<MasterItem>(COLUMN_NAMES, 0, METHOD_NAMES, null) {
@@ -615,22 +592,22 @@ public final class RpEditor extends AbstractStampEditor {
                 // 元町皮膚科
                 if (col == 1) {
                     String code = (String) this.getValueAt(row, 0);
-                    return isNameEditableComment(code);
+                    return AbstractStampEditor.isNameEditableComment(code);
                 }
 
                 // 用法
                 if (col == BUNDLE_COLUMN) {
                     String code = (String) this.getValueAt(row, 0);
-                    return (code!=null && code.startsWith(ClaimConst.ADMIN_CODE_START));
+                    return (code!=null && code.startsWith(ClaimConst.ADMIN_CODE_START)) ? true : false;
                 }
 
                 // 数量
                 if (col == ONEDAY_COLUMN) {
                     String code = (String) this.getValueAt(row, 0);
-                    boolean editableComment = isNameEditableComment(code);
+                    boolean editableComment = AbstractStampEditor.isNameEditableComment(code);
                     boolean codeIsAdmin = (code!=null && code.startsWith(ClaimConst.ADMIN_CODE_START));
-                    boolean codeIs82Comment = (is82Comment(code));
-                    return (code != null && !editableComment && !codeIsAdmin && !codeIs82Comment);
+                    boolean codeIs82Comment = (AbstractStampEditor.is82Comment(code));
+                    return (code==null || editableComment || codeIsAdmin || codeIs82Comment) ? false : true;
                 }
 
                 return false;
@@ -651,14 +628,16 @@ public final class RpEditor extends AbstractStampEditor {
                 }
 
                 // コメント編集 元町皮膚科
-                if (col == 1 && isNameEditableComment(mItem.getCode())) {
+                if (col == 1 && AbstractStampEditor.isNameEditableComment(mItem.getCode())) {
                     mItem.setName(value);
                     return;
                 }
 
                 // null
                 if (value == null || value.equals("")) {
-                    boolean test = (col == ONEDAY_COLUMN && (mItem.getClassCode()==ClaimConst.SYUGI || mItem.getClassCode()==ClaimConst.OTHER));
+                    boolean test = (col == ONEDAY_COLUMN && (mItem.getClassCode()==ClaimConst.SYUGI || mItem.getClassCode()==ClaimConst.OTHER))
+                                 ? true
+                                 : false;
                     if (test) {
                         mItem.setNumber(null);
                         mItem.setUnit(null);
@@ -694,13 +673,16 @@ public final class RpEditor extends AbstractStampEditor {
         setTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // 選択モード
         setTable.setRowSelectionAllowed(true);
         ListSelectionModel m = setTable.getSelectionModel();
-        m.addListSelectionListener((ListSelectionEvent e) -> {
-            if (e.getValueIsAdjusting() == false) {
-                int row = view.getSetTable().getSelectedRow();
-                if (tableModel.getObject(row)!= null) {
-                    view.getDeleteBtn().setEnabled(true);
-                } else {
-                    view.getDeleteBtn().setEnabled(false);
+        m.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting() == false) {
+                    int row = view.getSetTable().getSelectedRow();
+                    if (tableModel.getObject(row)!= null) {
+                        view.getDeleteBtn().setEnabled(true);
+                    } else {
+                        view.getDeleteBtn().setEnabled(false);
+                    }
                 }
             }
         });
@@ -888,18 +870,22 @@ public final class RpEditor extends AbstractStampEditor {
         // 検索結果テーブルを生成する
         //
         JTable searchResultTable = view.getSearchResultTable();
-        searchResultModel = new ListTableModel<>(SR_COLUMN_NAMES, SR_NUM_ROWS, SR_METHOD_NAMES, null);
+        searchResultModel = new ListTableModel<TensuMaster>(SR_COLUMN_NAMES, SR_NUM_ROWS, SR_METHOD_NAMES, null);
         searchResultTable.setModel(searchResultModel);
         searchResultTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         searchResultTable.setRowSelectionAllowed(true);
         ListSelectionModel lm = searchResultTable.getSelectionModel();
-        lm.addListSelectionListener((ListSelectionEvent e) -> {
-            if (e.getValueIsAdjusting() == false) {
-                int row = view.getSearchResultTable().getSelectedRow();
-                TensuMaster o = searchResultModel.getObject(row);
-                if (o != null) {
-                    addSelectedTensu(o);
-                    searchTextField.requestFocus();
+        lm.addListSelectionListener(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting() == false) {
+                    int row = view.getSearchResultTable().getSelectedRow();
+                    TensuMaster o = searchResultModel.getObject(row);
+                    if (o != null) {
+                        addSelectedTensu(o);
+                        searchTextField.requestFocus();
+                    }
                 }
             }
         });
@@ -910,9 +896,11 @@ public final class RpEditor extends AbstractStampEditor {
             column.setPreferredWidth(SR_COLUMN_WIDTH[i]);
         }
         
+        //searchResultTable.setDefaultRenderer(Object.class, new TensuItemRenderer(passPattern, shinkuPattern));
         if (Project.getBoolean("masterItemColoring", true)) {
             searchResultTable.setDefaultRenderer(Object.class, new TensuItemRenderer(passPattern, shinkuPattern));
         } else {
+            //searchResultTable.setDefaultRenderer(Object.class, new OddEvenRowRenderer());
             StripeTableCellRenderer str = new StripeTableCellRenderer();
             str.setTable(searchResultTable);
             str.setDefaultRenderer();
@@ -928,9 +916,12 @@ public final class RpEditor extends AbstractStampEditor {
                 //if (view.getRtCheck().isSelected()) {
                 //    search(view.getSearchTextField().getText().trim(),false);
                 //}
-                SwingUtilities.invokeLater(() -> {
-                    if (view.getRtCheck().isSelected()) {
-                        search(view.getSearchTextField().getText().trim(),false);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (view.getRtCheck().isSelected()) {
+                            search(view.getSearchTextField().getText().trim(),false);
+                        }
                     }
                 });
 //s.oh$
@@ -942,9 +933,12 @@ public final class RpEditor extends AbstractStampEditor {
                 //if (view.getRtCheck().isSelected()) {
                 //    search(view.getSearchTextField().getText().trim(),false);
                 //}
-                SwingUtilities.invokeLater(() -> {
-                    if (view.getRtCheck().isSelected()) {
-                        search(view.getSearchTextField().getText().trim(),false);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (view.getRtCheck().isSelected()) {
+                            search(view.getSearchTextField().getText().trim(),false);
+                        }
                     }
                 });
 //s.oh$
@@ -956,9 +950,12 @@ public final class RpEditor extends AbstractStampEditor {
                 //if (view.getRtCheck().isSelected()) {
                 //    search(view.getSearchTextField().getText().trim(),false);
                 //}
-                SwingUtilities.invokeLater(() -> {
-                    if (view.getRtCheck().isSelected()) {
-                        search(view.getSearchTextField().getText().trim(),false);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (view.getRtCheck().isSelected()) {
+                            search(view.getSearchTextField().getText().trim(),false);
+                        }
                     }
                 });
 //s.oh$
@@ -966,8 +963,11 @@ public final class RpEditor extends AbstractStampEditor {
         };
         searchTextField = view.getSearchTextField();
         searchTextField.getDocument().addDocumentListener(dl);
-        searchTextField.addActionListener((ActionEvent e) -> {
-            search(view.getSearchTextField().getText().trim(),true);
+        searchTextField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                search(view.getSearchTextField().getText().trim(),true);
+            }
         });
         searchTextField.addFocusListener(AutoKanjiListener.getInstance());
         // マスター検索ができない場合を追加
@@ -976,25 +976,37 @@ public final class RpEditor extends AbstractStampEditor {
         // Real Time Search
         boolean rt = Project.getBoolean("masterSearch.realTime", true);
         view.getRtCheck().setSelected(rt);
-        view.getRtCheck().addActionListener((ActionEvent arg0) -> {
-            Project.setBoolean("masterSearch.realTime", view.getRtCheck().isSelected());
+        view.getRtCheck().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                Project.setBoolean("masterSearch.realTime", view.getRtCheck().isSelected());
+            }
         });
 
         // 部分一致
         boolean pmatch = Project.getBoolean("masterSearch.partialMatch", false);
         view.getPartialChk().setSelected(pmatch);
-        view.getPartialChk().addActionListener((ActionEvent arg0) -> {
-            Project.setBoolean("masterSearch.partialMatch", view.getPartialChk().isSelected());
+        view.getPartialChk().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                Project.setBoolean("masterSearch.partialMatch", view.getPartialChk().isSelected());
+            }
         });
 
         // 用法検索
         JComboBox usage = view.getUsageCombo();
-        usage.addActionListener((ActionEvent ae) -> {
-            JComboBox cb = (JComboBox)ae.getSource();
-            int index = cb.getSelectedIndex();
-            String regExp = ADMIN_CODE_REGEXP[index];
-            if (!regExp.equals("")) {
-                getUsage(regExp);
+        usage.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                JComboBox cb = (JComboBox)ae.getSource();
+                int index = cb.getSelectedIndex();
+                String regExp = ADMIN_CODE_REGEXP[index];
+                if (!regExp.equals("")) {
+                    getUsage(regExp);
+                }
             }
         });
         
@@ -1023,24 +1035,31 @@ public final class RpEditor extends AbstractStampEditor {
         boolean bOut = Project.getBoolean(Project.RP_OUT, true);
         outBtn.setSelected(bOut);
         inBtn.setSelected(!bOut);
-        ActionListener al = (ActionEvent e) -> {
-            boolean b = view.getOutRadio().isSelected();
-            Project.setBoolean(Project.RP_OUT, b);
+        ActionListener al = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean b = view.getOutRadio().isSelected();
+                Project.setBoolean(Project.RP_OUT, b);
+            }
         };
         inBtn.addActionListener(al);
         outBtn.addActionListener(al);
         
         // 頓用と臨時処方 on の場合は排他制御が必要
-        ActionListener al2 = (ActionEvent ae) -> {
-            JCheckBox cb = (JCheckBox)ae.getSource();
-            if (cb.isSelected()) {
-                if (cb==view.getTonyoChk()) {
-                    if (view.getTemporalChk().isSelected()) {
-                        view.getTemporalChk().setSelected(false);
-                    }
-                } else if (cb==view.getTemporalChk()) {
-                    if (view.getTonyoChk().isSelected()) {
-                        view.getTonyoChk().setSelected(false);
+        ActionListener al2 = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                JCheckBox cb = (JCheckBox)ae.getSource();
+                if (cb.isSelected()) {
+                    if (cb==view.getTonyoChk()) {
+                        if (view.getTemporalChk().isSelected()) {
+                            view.getTemporalChk().setSelected(false);
+                        }
+                    } else if (cb==view.getTemporalChk()) {
+                        if (view.getTonyoChk().isSelected()) {
+                            view.getTonyoChk().setSelected(false);
+                        }
                     }
                 }
             }
@@ -1053,61 +1072,80 @@ public final class RpEditor extends AbstractStampEditor {
 
         // OK & 連続ボタン
         view.getOkCntBtn().setEnabled(false);
+   //minagawa^ Icon Server
         if(editorButtonTypeIsIcon()) {
             view.getOkCntBtn().setIcon(ClientContext.getImageIconArias("icon_gear_small"));
         }
-////s.oh^ 2014/10/22 Icon表示
+//s.oh^ 2014/10/22 Icon表示
 //        view.getSearchLabel().setIcon(ClientContext.getImageIconArias("icon_search_small"));
-////s.oh$      
-        view.getOkCntBtn().addActionListener((ActionEvent e) -> {
-            boundSupport.firePropertyChange(VALUE_PROP, null, getValue());
-            clear();
+//s.oh$
+//minagawa$       
+        view.getOkCntBtn().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boundSupport.firePropertyChange(VALUE_PROP, null, getValue());
+                clear();
+            }
         });
 
         // OK ボタン
         view.getOkBtn().setEnabled(false);
+   //minagawa^ Icon Server
         if(editorButtonTypeIsIcon()) {
             view.getOkBtn().setIcon(ClientContext.getImageIconArias("icon_accept_small"));
-        }     
-        view.getOkBtn().addActionListener((ActionEvent e) -> {
-            boundSupport.firePropertyChange(VALUE_PROP, null, getValue());
-            dispose();
-            boundSupport.firePropertyChange(EDIT_END_PROP, false, true);
+        }
+//minagawa$       
+        view.getOkBtn().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boundSupport.firePropertyChange(VALUE_PROP, null, getValue());
+                dispose();
+                boundSupport.firePropertyChange(EDIT_END_PROP, false, true);
+            }
         });
 
         // 削除ボタン
         view.getDeleteBtn().setEnabled(false);
+//minagawa^ Icon Server
         if(editorButtonTypeIsIcon()) {
             view.getDeleteBtn().setIcon(ClientContext.getImageIconArias("icon_delete_small"));
-        }         
-        view.getDeleteBtn().addActionListener((ActionEvent e) -> {
-            int row = view.getSetTable().getSelectedRow();
-            if (tableModel.getObject(row) != null) {
-                tableModel.deleteAt(row);
-                checkValidation();
+        }
+//minagawa$          
+        view.getDeleteBtn().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = view.getSetTable().getSelectedRow();
+                if (tableModel.getObject(row) != null) {
+                    tableModel.deleteAt(row);
+                    checkValidation();
+                }
             }
         });
 
         // クリアボタン
         view.getClearBtn().setEnabled(false);
+//minagawa^ Icon Server
         if(editorButtonTypeIsIcon()) {
             view.getClearBtn().setIcon(ClientContext.getImageIconArias("icon_clear_small"));
-        }       
-        view.getClearBtn().addActionListener((ActionEvent e) -> {
-            clear();
+        }
+//minagawa$         
+        view.getClearBtn().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clear();
+            }
         });
     }
 
-//    public RpEditor() {
-//        super();
-//    }
+    public RpEditor() {
+        super();
+    }
 
     public RpEditor(String entity) {
-        this(entity, true);
+        super(entity, true);
     }
 
     public RpEditor(String entity, boolean mode) {
         super(entity, mode);
-        initComponents();
     }
 }
