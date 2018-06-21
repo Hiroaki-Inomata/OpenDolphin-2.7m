@@ -14,4 +14,12 @@ OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin の OpenDolphin2.7.0b (2.
 
 ### クライアント起動方法
 　windows であれば、ダブルクリック一発で起動します。
-
+ 
+  
+### 派生プロジェクト
+[OpnOcean](https://github.com/air-h-128k-il/OpenOcean)が実質的な後継プロジェクトです。  
+  
+* 当プロジェクト fork 後、コードメンテナンスおよびいくつかの機能が追加されています。  
+* さらに将来的に DICOMviewer/PACS [HorliX](https://github.com/air-h-128k-il/HorliX) との連携も期待できます。  
+  
+OpenOcean の利用も検討してみてください。
