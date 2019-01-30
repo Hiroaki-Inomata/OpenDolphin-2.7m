@@ -3,7 +3,7 @@
 ### 概要
 OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin の OpenDolphin2.7.0b (2.7) の modified version（ bugfix + α）です。
  * クライアント外観・データ構造は 2.7 と完全に同一です。
- * 簡易なファイルバックアップ機能を備えています。
+ * ファイルバックアップ機能を備えています。
 
 ### インストール方法
 
@@ -23,3 +23,5 @@ OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin の OpenDolphin2.7.0b (2.
 * さらに将来的に DICOMviewer/PACS [HorliX](https://github.com/air-h-128k-il/HorliX) との連携も期待できます。  
   
 OpenOcean の利用も検討してみてください。
+と言っていたのですが OpenOcean 大幅書き直しの予定なのでこちらを現役復帰させる（かも）。 
+現在でも使えることは使えると思います。
