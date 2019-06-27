@@ -22,6 +22,11 @@ OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin の OpenDolphin2.7.0b (2.
 * 当プロジェクト fork 後、コードメンテナンスおよびいくつかの機能が追加されています。  
 * さらに将来的に DICOMviewer/PACS [HorliX](https://github.com/air-h-128k-il/HorliX) との連携も期待できます。  
   
-OpenOcean の利用も検討してみてください。
-と言っていたのですが OpenOcean 大幅書き直しの予定なのでこちらを現役復帰させる（かも）。 
-現在でも使えることは使えると思います。
+OpenOcean の利用も検討してみてください。  
+と言っていたのですが OpenOcean 大幅書き直しの予定なのでこちらを現役復帰させる（かも）。  現在でも使えることは使えると思います。  
+  
+    
+    
+[猪股弘明](https://phazor.info/blog-ja/?page_id=2)  
+[フェイザー合同会社](https://phazor.info)（PHAZOR, LLC）  
+精神科医  
