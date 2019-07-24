@@ -7,7 +7,7 @@ OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin の OpenDolphin2.7.0b (2.
 
 ### インストール方法
 
- * [OpenDolphin Ver.2.5.12(2015-1-15) のインストール](http://www.koutou-software.net/misc/install-opendolphin-2_5_12-2015-01-15.php)
+ * [OpenOcean/OpenDolphin をカスタマイズするために知っておいた方がよいこと](https://phazor.info/OpenOcean/?p=1)
  * [Open Dolphin 2.7.0b を Win10 にインストールしてみた](https://phazor.info/air/?page_id=543)
 
 　などを参考にしてください。
