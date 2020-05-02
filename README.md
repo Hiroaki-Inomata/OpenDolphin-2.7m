@@ -1,7 +1,7 @@
 ## OpenDolphin-2.7m
 
 ### 概要
-OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin の OpenDolphin2.7.0b (2.7) の modified version（ bugfix + α）です。
+OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin のオープンソース電子カルテ OpenDolphin2.7.0b (2.7) の modified version（ bugfix + α）です。
  * クライアント外観・データ構造は 2.7 と完全に同一です。
  * ファイルバックアップ機能を備えています。
 
