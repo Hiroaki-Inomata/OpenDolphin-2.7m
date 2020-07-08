@@ -2067,18 +2067,19 @@ public class KarteEditor extends AbstractChartDocument implements IInfoModel, NC
                     ddl.putKarte(model);
                     
                     //inomata 当方環境、通信不具合ままある。送信前に問答無用でバックアップを取る。
+                    //ANN2b Mac 対応　File.separator
                     String userhome = System.getProperty("user.home");
-                    File file = new File(userhome + "\\OpenDolphin" + "\\Backup");
+                    File file = new File(userhome + File.separator + "OpenDolphin" + File.separator + "Backup"); 
                         if (file.exists()==false) {
                             file.mkdir();
                         }
-                    File subfile = new File(file +"\\"+ getContext().getPatient().getPatientId());
+                    File subfile = new File(file + File.separator + getContext().getPatient().getPatientId());
                         if (subfile.exists()==false) {
                             subfile.mkdir();
                         }
                     String firstdate =  new SimpleDateFormat("yyyy-MM-dd-HH-mm").format( model.getDocInfoModel().getFirstConfirmDate());
                     String recdate = new SimpleDateFormat("yyyy-MM-dd-HH-mm").format( model.getDocInfoModel().getConfirmDate());                        
-                    File backup = new File(subfile.toString() +"\\"+ firstdate + ".txt");
+                    File backup = new File(subfile.toString() + File.separator + firstdate + ".txt");
                         if (backup.exists()==false) {
                             try{
                                backup.createNewFile();
