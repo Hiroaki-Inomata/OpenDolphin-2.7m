@@ -8,13 +8,14 @@ OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin のオープンソース�
 ### インストール方法
 
  * [OpenOcean/OpenDolphin をカスタマイズするために知っておいた方がよいこと](https://phazor.info/OpenOcean/?p=1)
+ * [OpenOcean/OpenDolphin をカスタマイズするために知っておいた方がよいこと ２](https://phazor.info/OpenOcean/?p=217)
  * [Open Dolphin 2.7.0b を Win10 にインストールしてみた](https://phazor.info/air/?page_id=543)
  * [Open Dolphin 2.7(m) を Mac OSX にインストールする](https://allnightnihon2b.net/blog-jp/?page_id=367)
 
 　などを参考にしてください。
 
 ### クライアント起動方法
-　windows であれば、ダブルクリック一発で起動します。
+　windows か Mac であれば、ダブルクリック一発で起動します。
  
   
 ### 派生プロジェクト
