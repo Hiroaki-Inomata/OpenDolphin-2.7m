@@ -28,7 +28,11 @@ OpenOcean の利用も検討してみてください。
 と言っていたのですが OpenOcean 大幅書き直しの予定（→ [DolphORCA](https://p-horlix.net/blog/?page_id=346) プロジェクトに統合されました）なのでこちらを現役復帰させる（かも）。  現在でも使えることは使えると思います。  
   
 ![opendolphin on JakartaEE, Java17](https://user-images.githubusercontent.com/8698703/200154977-39c4a66a-058d-40a5-b12d-d3bc1dc7aad2.png)
-    
+  
+Java17 移行に伴い、画像の取り扱いを拡張。  
+  
+  ![opendolphin-java17-image](https://user-images.githubusercontent.com/8698703/200156601-e4ad9bce-aecf-48ec-b7ae-b3ce92712777.png)  
+
     
 [猪股弘明](https://phazor.info/blog-ja/?page_id=2)  
 [フェイザー合同会社](https://phazor.info)（PHAZOR, LLC）  
