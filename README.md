@@ -27,7 +27,7 @@ OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin のオープンソース�
 OpenOcean の利用も検討してみてください。  
 と言っていたのですが OpenOcean 大幅書き直しの予定（→ [DolphORCA](https://p-horlix.net/blog/?page_id=346) プロジェクトに統合されました）なのでこちらを現役復帰させる（かも）。  現在でも使えることは使えると思います。  
   
-[OpenDolphin Ver6 on JakartaEE, Java17](opendolphin-java17-wf26](https://user-images.githubusercontent.com/8698703/200154977-39c4a66a-058d-40a5-b12d-d3bc1dc7aad2.png)
+[https://user-images.githubusercontent.com/8698703/200154977-39c4a66a-058d-40a5-b12d-d3bc1dc7aad2.png]
     
     
 [猪股弘明](https://phazor.info/blog-ja/?page_id=2)  
