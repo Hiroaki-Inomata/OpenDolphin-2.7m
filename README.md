@@ -27,15 +27,17 @@ OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin のオープンソース�
 * さらに将来的に DICOMviewer/PACS [HorliX](https://github.com/air-h-128k-il/HorliX) との連携も期待できます。  
   
 OpenOcean の利用も検討してみてください。  
-と言っていたのですが OpenOcean 大幅書き直しの予定（→ [DolphORCA](https://p-horlix.net/blog/?page_id=346) プロジェクトに統合されました）なのでこちらを現役復帰させる（かも）。  現在でも使えることは使えると思います。  
+と言っていたのですが OpenOcean 大幅書き直しの予定（→ [DolphORCA](https://p-horlix.net/blog/?page_id=346) プロジェクトに統合されました）なのでこちらを現役復帰させる（かも）。  
+現在でも使えることは使えると思います。  
 ただし、安全性に関するガイドラインの Ver5.2 以降、システム停止時には本系統とは「別に」見読性確保のためのビューアを設置することが推奨されています。 
    
 ![OpenDolphin HTML/PDF Viewer](https://i0.wp.com/p-horlix.net/blog/wp-content/uploads/2022/05/OpenDolphin_HTML_PDF_Viewer_inomata_air-h-128k-il.png?w=900&ssl=1)
   
 2.7m 系列では [OpenDolphin HTML/PDF Viewer](https://p-horlix.net/blog/?p=289) が用意されています。  
+こちらはオープンソースでもなんでもないため、本リポジトリには含まれていません。  
 
-  
-    
+
+
 Java17 移行に伴い、画像の取り扱いを拡張。  
   
   ![opendolphin-java17-image](https://user-images.githubusercontent.com/8698703/200156601-e4ad9bce-aecf-48ec-b7ae-b3ce92712777.png)  
