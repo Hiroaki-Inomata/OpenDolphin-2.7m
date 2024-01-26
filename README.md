@@ -37,11 +37,11 @@ OpenOcean の利用も検討してみてください。
 こちらはオープンソースでもなんでもないため、本リポジトリには含まれていません。  
 
 
-
+### その他
 Java17 移行に伴い、画像の取り扱いを拡張。  
   
   ![opendolphin-java17-image](https://user-images.githubusercontent.com/8698703/200156601-e4ad9bce-aecf-48ec-b7ae-b3ce92712777.png)  
-
+　　
     
 [猪股弘明](https://phazor.info/blog-ja/?page_id=2)  
 [フェイザー合同会社](https://phazor.info)（PHAZOR, LLC）  
