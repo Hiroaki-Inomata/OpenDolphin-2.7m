@@ -26,9 +26,11 @@ OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin のオープンソース�
   
 OpenOcean の利用も検討してみてください。  
 と言っていたのですが OpenOcean 大幅書き直しの予定（→ [DolphORCA](https://p-horlix.net/blog/?page_id=346) プロジェクトに統合されました）なのでこちらを現役復帰させる（かも）。  現在でも使えることは使えると思います。  
-ただし、安全性に関するガイドラインの Ver5.2 以降、システム停止時には本系統とは「別に」見読性確保のためのビューアを設置することが推奨されています。  
+ただし、安全性に関するガイドラインの Ver5.2 以降、システム停止時には本系統とは「別に」見読性確保のためのビューアを設置することが推奨されています。 
+   
 ![OpenDolphin HTML/PDF Viewer](https://i0.wp.com/p-horlix.net/blog/wp-content/uploads/2022/05/OpenDolphin_HTML_PDF_Viewer_inomata_air-h-128k-il.png?w=900&ssl=1)
-2.7m 系列では [OpenDolphin HTML/PDF Viewer](https://p-horlix.net/blog/?p=289) が用意されています。   
+  
+2.7m 系列では [OpenDolphin HTML/PDF Viewer](https://p-horlix.net/blog/?p=289) が用意されています。  
   
 ![opendolphin on JakartaEE, Java17](https://user-images.githubusercontent.com/8698703/200154977-39c4a66a-058d-40a5-b12d-d3bc1dc7aad2.png)
   
