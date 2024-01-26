@@ -15,8 +15,10 @@ OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin のオープンソース�
 　などを参考にしてください。
 
 ### クライアント起動方法
-　windows か Mac であれば、ダブルクリック一発で起動します。
- 
+　windows か Mac であれば、ダブルクリック一発で起動します。  
+  
+![opendolphin on JakartaEE, Java17](https://user-images.githubusercontent.com/8698703/200154977-39c4a66a-058d-40a5-b12d-d3bc1dc7aad2.png)
+  
   
 ### 派生プロジェクト
 [OpenOcean](https://github.com/air-h-128k-il/OpenOcean)が実質的な後継プロジェクトです。  
@@ -31,9 +33,9 @@ OpenOcean の利用も検討してみてください。
 ![OpenDolphin HTML/PDF Viewer](https://i0.wp.com/p-horlix.net/blog/wp-content/uploads/2022/05/OpenDolphin_HTML_PDF_Viewer_inomata_air-h-128k-il.png?w=900&ssl=1)
   
 2.7m 系列では [OpenDolphin HTML/PDF Viewer](https://p-horlix.net/blog/?p=289) が用意されています。  
+
   
-![opendolphin on JakartaEE, Java17](https://user-images.githubusercontent.com/8698703/200154977-39c4a66a-058d-40a5-b12d-d3bc1dc7aad2.png)
-  
+    
 Java17 移行に伴い、画像の取り扱いを拡張。  
   
   ![opendolphin-java17-image](https://user-images.githubusercontent.com/8698703/200156601-e4ad9bce-aecf-48ec-b7ae-b3ce92712777.png)  
