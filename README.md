@@ -26,7 +26,7 @@ OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin のオープンソース�
 * 当プロジェクト fork 後、コードメンテナンスおよびいくつかの機能が追加されています。  
 * さらに将来的に DICOMviewer/PACS [HorliX](https://github.com/air-h-128k-il/HorliX) との連携も期待できます。  
   
-OpenOcean の利用も検討してみてください。  
+[OpenOcean](https://phazor.info/OpenOcean/) の利用も検討してみてください。  
 と言っていたのですが OpenOcean 大幅書き直しの予定（→ [DolphORCA](https://p-horlix.net/blog/?page_id=346) プロジェクトに統合されました）なのでこちらを現役復帰させる（かも）。  
 現在でも使えることは使えると思います。  
 ただし、安全性に関するガイドラインの Ver5.2 以降、システム停止時には本系統とは「別に」見読性確保のためのビューアを設置することが推奨されています。 
@@ -41,7 +41,12 @@ OpenOcean の利用も検討してみてください。
 念の為、（事業譲渡された後に）メドレーにも照会しましたが、「著作権はメドレーが完全に保有している。両氏は現在は著作権は有していない。クレジットする必要はない」とかなり明快な回答をいただいています。  
 だから、ここでは特に著作権者として名前は挙げません。  
 ただ、混乱を避けるためソースコード上での author 表記は残してあります。  
-<br>
+
+### OpenOcean 騒動
+「OpenOcean は GPL に違反している！」と物騒な主張をする人が過去にいました。  
+顛末は『[OpenOcean 騒動](https://researchmap.jp/blogs/blog_entries/view/143851/cf29de114fa73c109536ac188d7e0345)』・『[小林慎治氏の OpenOcean に関する事実誤認](https://phazor.jp/blog/?p=336)』などにまとめてあります。  
+
+  
 ### その他
 Java17 移行に伴い、画像の取り扱いを拡張。  
   
