@@ -44,14 +44,13 @@ OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin のオープンソース�
 
 ### OpenOcean 騒動
 「OpenOcean は GPL に違反している！」と物騒な主張をする人が過去にいました。  
-顛末は『[OpenOcean 騒動](https://researchmap.jp/blogs/blog_entries/view/143851/cf29de114fa73c109536ac188d7e0345)』・『[小林慎治氏の OpenOcean に関する事実誤認](https://phazor.jp/blog/?p=336)』などにまとめてあります。  
+顛末は『[OpenOcean 怪文書](https://researchmap.jp/blogs/blog_entries/view/143851/cf29de114fa73c109536ac188d7e0345)』・『[小林慎治氏の OpenOcean に関する事実誤認](https://phazor.jp/blog/?p=336)』などにまとめてあります。  
 
   
 ### その他
-Java17 移行に伴い、画像の取り扱いを拡張。  
-  
-  ![opendolphin-java17-image](https://user-images.githubusercontent.com/8698703/200156601-e4ad9bce-aecf-48ec-b7ae-b3ce92712777.png)  
-　　
+Java17 移行が若干難しいかもしれません。  
+これは、Java に加わった新機能「モジュール」に古いドルフィンのソースコードが対応していないためです。解決方法はいくつかあり、もっとも自然な方法は、邪魔になっている箇所を削除して同様の機能を実装することです。2.7m 系列では、既にこの作業を完了しています。ソースコードは要望があれば、公開しますが、まあないでしょうね。必要な方は応相談。  
+JakartaEE 10 への移行作業はこれに比べると単純ですが、修正する箇所はけっこうあると思います。
     
 [猪股弘明](https://phazor.info/blog-ja/?page_id=2)  
 [フェイザー合同会社](https://phazor.info)（PHAZOR, LLC）  
