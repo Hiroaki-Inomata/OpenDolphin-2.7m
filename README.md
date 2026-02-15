@@ -43,7 +43,8 @@ OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin のオープンソース�
 ただ、混乱を避けるためソースコード上での author 表記は残してあります。  
 LICENSE 文書の (C) 2001-2011 Kazushi Minagawa, Digital Globe という表記は  
 ・他の箇所の著作権表記と整合性がつかない  
-・fork 時点での時間（2016）からいっておかしい  
+・fork 時点での時間（2016）からいっておかしい 
+・そもそもこの表記自体皆川和史の手による[改竄](https://researchmap.jp/blogs/blog_entries/view/143851/cf29de114fa73c109536ac188d7e0345)である  
 といった理由で変更しています。  
 
 ### OpenOcean 騒動
