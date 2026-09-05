@@ -41,7 +41,8 @@ OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin のオープンソース�
 念の為、（事業譲渡された後に）メドレーにも照会しましたが、「著作権はメドレーが完全に保有している。両氏は現在は著作権は有していない。クレジットする必要はない」とかなり明快な回答をいただいています。  
 だから、ここでは特に著作権者として名前は挙げません。  
 ただ、混乱を避けるためソースコード上での author 表記は残してあります。  
-LICENSE 文書の (C) 2001-2011 Kazushi Minagawa, Digital Globe という表記は  
+<br>
+また、LICENSE 文書の (C) 2001-2011 Kazushi Minagawa, Digital Globe という表記は  
 ・他の箇所の著作権表記と整合性がつかない  
 ・fork 時点での時間（2016）からいっておかしい  
 ・そもそもこの表記自体皆川和史の手による[改竄](https://researchmap.jp/blogs/blog_entries/view/143851/cf29de114fa73c109536ac188d7e0345)である  
