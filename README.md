@@ -27,7 +27,7 @@ OpenDolphin-2.7m (2.7m) は、 dolphin-dev/OpenDolphin のオープンソース�
 * さらに将来的に DICOMviewer/PACS [HorliX](https://github.com/air-h-128k-il/HorliX) との連携も期待できます。  
   
 [OpenOcean](https://phazor.info/OpenOcean/) の利用も検討してみてください。  
-と言っていたのですが OpenOcean 大幅書き直しの予定（→ [DolphORCA](https://p-horlix.net/blog/?page_id=346) プロジェクトに統合されました）なのでこちらを現役復帰させる（かも）。  
+と言っていたのですが OpenOcean 大幅書き直しの予定（→ [DolphORCA](https://p-horlix.net/blog/?page_id=346) プロジェクトを経て [OceanMini](https://phazor.info/OpenOcean/?page_id=592) に統合されました）なのでこちらを現役復帰させる（かも）。  
 現在でも使えることは使えると思います。  
 ただし、安全性に関するガイドラインの Ver5.2 以降、システム停止時には本系統とは「別に」見読性確保のためのビューアを設置することが推奨されています。 
    
